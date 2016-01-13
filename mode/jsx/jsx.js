@@ -70,6 +70,8 @@
 
         state.context = new Context(CodeMirror.startState(jsMode, indent),
                                     jsMode, 0, state.context)
+
+        jsMode.expectExpressionBlock(state.context.state)
         return null
       }
 
