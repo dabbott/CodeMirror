@@ -68,8 +68,11 @@
           indent += config.indentUnit
         }
 
+        stream.next()
+
         state.context = new Context(CodeMirror.startState(jsMode, indent),
-                                    jsMode, 0, state.context)
+                                    jsMode, 1, state.context)
+        jsMode.expectExpression(state.context.state)
         return null
       }
 
@@ -85,6 +88,8 @@
         } else if (stream.match("/*")) {
           cx.depth = 2
           return token(stream, state)
+        } else if (stream.eat('}')) {
+          return null
         }
       }
 
@@ -116,7 +121,11 @@
         if (cur == "{") {
           cx.depth++
         } else if (cur == "}") {
-          if (--cx.depth == 0) state.context = state.context.prev
+          if (--cx.depth == 0) {
+            state.context = state.context.prev
+            stream.backUp(1)
+            return null
+          }
         }
       }
       return style
