@@ -594,7 +594,7 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
       }
       cx.marked = "property";
       if (value == "get" || value == "set") return cont(classGetterSetter, functiondef, classBody);
-      return cont(functiondef, classBody);
+      return cont(classProperty, classBody)
     }
     if (value == "*") {
       cx.marked = "keyword";
@@ -608,6 +608,10 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
     cx.marked = "property";
     return cont();
   }
+  function classProperty(_type, value) {
+    if (value == "=") return cont(expressionNoComma);
+    return pass(functiondef);
+  }
   function afterExport(_type, value) {
     if (value == "*") { cx.marked = "keyword"; return cont(maybeFrom, expect(";")); }
     if (value == "default") { cx.marked = "keyword"; return cont(expression, expect(";")); }
@@ -619,6 +623,7 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
   }
   function importSpec(type, value) {
     if (type == "{") return contCommasep(importSpec, "}");
+    if (type == "}") return pass()
     if (type == "variable") register(value);
     if (value == "*") cx.marked = "keyword";
     return cont(maybeAs);
@@ -626,7 +631,8 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
   function maybeAs(_type, value) {
     if (value == "as") { cx.marked = "keyword"; return cont(importSpec); }
   }
-  function maybeFrom(_type, value) {
+  function maybeFrom(type, value) {
+    if (type == ",") { return cont(importSpec) }
     if (value == "from") { cx.marked = "keyword"; return cont(expression); }
   }
   function arrayLiteral(type) {
