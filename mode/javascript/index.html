@@ -32,6 +32,21 @@
 <div><textarea id="code" name="code">
 // Demo code (the actual new parser character stream implementation)
 
+export class SomeClass {
+
+  someMethod() {
+    return 'Hello';
+  }
+}
+
+export default class App extends SomeClass {
+  testMethod() {
+    return (
+      'Hi, hello';
+    )
+  }
+}
+
 function StringStream(string) {
   this.pos = 0;
   this.string = string;
