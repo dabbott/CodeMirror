@@ -362,7 +362,6 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
     if (type == "default") return cont(expect(":"));
     if (type == "catch") return cont(pushlex("form"), pushcontext, expect("("), funarg, expect(")"),
                                      statement, poplex, popcontext);
-    if (type == "class") return cont(pushlex("form"), className, poplex);
     if (type == "export") return cont(pushlex("stat"), afterExport, poplex);
     if (type == "import") return cont(pushlex("stat"), afterImport, poplex);
     if (type == "module") return cont(pushlex("form"), pattern, pushlex("}"), expect("{"), block, poplex, poplex)
@@ -383,6 +382,7 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
 
     var maybeop = noComma ? maybeoperatorNoComma : maybeoperatorComma;
     if (atomicTypes.hasOwnProperty(type)) return cont(maybeop);
+    if (type == "class") return cont(pushlex("form"), className, poplex);
     if (type == "function") return cont(functiondef, maybeop);
     if (type == "keyword c") return cont(noComma ? maybeexpressionNoComma : maybeexpression);
     if (type == "(") return cont(pushlex(")"), maybeexpression, comprehension, expect(")"), poplex, maybeop);
@@ -581,6 +581,7 @@ CodeMirror.defineMode("javascript", function(config, parserConfig) {
   }
   function className(type, value) {
     if (type == "variable") {register(value); return cont(classNameAfter);}
+    return pass(classNameAfter);
   }
   function classNameAfter(type, value) {
     if (value == "extends") return cont(expression, classNameAfter);
